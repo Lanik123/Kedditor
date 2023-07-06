@@ -10,8 +10,8 @@ import ru.lanik.kedditor.model.source.PostSource
 import ru.lanik.kedditor.utils.SchedulerPolicy
 import ru.lanik.kedditor.utils.extension.applySchedulerPolicy
 import ru.lanik.kedditor.utils.extension.fixAuth
-import ru.lanik.network.api.PostAPI
-import ru.lanik.network.api.SubredditsAPI
+import ru.lanik.network.api.reactive.RxPostAPI
+import ru.lanik.network.api.reactive.RxSubredditsAPI
 import ru.lanik.network.extension.toListPost
 import ru.lanik.network.extension.toPostWithComments
 import ru.lanik.network.extension.toSubreddit
@@ -19,8 +19,8 @@ import ru.lanik.network.models.Post
 import ru.lanik.network.models.PostWithComments
 
 class RxPostRepository(
-    private val postAPI: PostAPI,
-    private val subredditsAPI: SubredditsAPI,
+    private val rxPostAPI: RxPostAPI,
+    private val rxSubredditsAPI: RxSubredditsAPI,
     private val schedulerPolicy: SchedulerPolicy,
     private val settingsStateFlow: StateFlow<SettingsModel>,
 ) : PostRepository.Reactive {
@@ -31,13 +31,13 @@ class RxPostRepository(
         Log.e("Deb", source.toPath())
         val compositeDisposable = CompositeDisposable()
         val direct = source.toPath().fixAuth(settingsStateFlow.value.isAuth)
-        return postAPI.getPosts(direct, after)
+        return rxPostAPI.getPosts(direct, after)
             .applySchedulerPolicy(schedulerPolicy)
             .doOnDispose { compositeDisposable.dispose() }
             .map { dto ->
                 val postList = dto.data.children.toListPost()
                 postList.forEach { post ->
-                    subredditsAPI.getSubredditInfo(post.name, "".fixAuth(settingsStateFlow.value.isAuth)).subscribe({
+                    rxSubredditsAPI.getSubredditInfo(post.name, "".fixAuth(settingsStateFlow.value.isAuth)).subscribe({
                         post.iconUrl.value = it.toSubreddit().imageUrl ?: ""
                     }, {}).addTo(compositeDisposable)
                 }
@@ -48,7 +48,7 @@ class RxPostRepository(
     override fun fetchPostWithComments(url: String): Single<PostWithComments> {
         val newUrl = url.drop(1).dropLast(1)
         val direct = newUrl.fixAuth(settingsStateFlow.value.isAuth)
-        return postAPI.getSinglePost(direct).map {
+        return rxPostAPI.getSinglePost(direct).map {
             it.toPostWithComments()
         }
     }

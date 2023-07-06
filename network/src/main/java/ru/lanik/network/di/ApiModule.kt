@@ -13,10 +13,14 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
-import ru.lanik.network.api.PostAPI
-import ru.lanik.network.api.SubredditsAPI
-import ru.lanik.network.api.interceptor.LoggingInterceptorQualifier
+import ru.lanik.network.api.reactive.RxPostAPI
+import ru.lanik.network.api.reactive.RxSubredditsAPI
+import ru.lanik.network.api.suspend.SuspendPostAPI
+import ru.lanik.network.api.suspend.SuspendSubredditsAPI
 import ru.lanik.network.constants.ApiBaseConst
+import ru.lanik.network.di.qualifier.LoggingInterceptorQualifier
+import ru.lanik.network.di.qualifier.RxRetrofitQualifier
+import ru.lanik.network.di.qualifier.SuspendRetrofitQualifier
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -46,8 +50,8 @@ class ApiModule {
         .build()
 
     @Provides
-    @Singleton
-    fun provideRetrofit(okhttpClient: OkHttpClient, type: MediaType): Retrofit = Retrofit.Builder()
+    @RxRetrofitQualifier
+    fun provideRxRetrofit(okhttpClient: OkHttpClient, type: MediaType): Retrofit = Retrofit.Builder()
         .baseUrl(ApiBaseConst.BASE_URL.notAuth)
         .addConverterFactory(format.asConverterFactory(type))
         .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
@@ -56,11 +60,37 @@ class ApiModule {
 
     @Provides
     @Singleton
-    fun provideApiSubreddits(retrofit: Retrofit): SubredditsAPI =
-        retrofit.create(SubredditsAPI::class.java)
+    fun provideRxApiSubreddits(
+        @RxRetrofitQualifier retrofit: Retrofit,
+    ): RxSubredditsAPI =
+        retrofit.create(RxSubredditsAPI::class.java)
 
     @Provides
     @Singleton
-    fun provideApiPost(retrofit: Retrofit): PostAPI =
-        retrofit.create(PostAPI::class.java)
+    fun provideRxApiPost(
+        @RxRetrofitQualifier retrofit: Retrofit,
+    ): RxPostAPI =
+        retrofit.create(RxPostAPI::class.java)
+
+    @Provides
+    @SuspendRetrofitQualifier
+    fun provideSuspendRetrofit(okhttpClient: OkHttpClient, type: MediaType): Retrofit = Retrofit.Builder()
+        .baseUrl(ApiBaseConst.BASE_URL.notAuth)
+        .addConverterFactory(format.asConverterFactory(type))
+        .client(okhttpClient)
+        .build()
+
+    @Provides
+    @Singleton
+    fun provideSuspendApiSubreddits(
+        @SuspendRetrofitQualifier retrofit: Retrofit,
+    ): SuspendSubredditsAPI =
+        retrofit.create(SuspendSubredditsAPI::class.java)
+
+    @Provides
+    @Singleton
+    fun provideSuspendApiPost(
+        @SuspendRetrofitQualifier retrofit: Retrofit,
+    ): SuspendPostAPI =
+        retrofit.create(SuspendPostAPI::class.java)
 }

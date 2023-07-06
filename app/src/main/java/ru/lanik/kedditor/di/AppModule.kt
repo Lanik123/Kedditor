@@ -30,8 +30,8 @@ import ru.lanik.kedditor.ui.screen.settings.SettingsViewModelFactory
 import ru.lanik.kedditor.ui.screen.sublist.SublistViewModelFactory
 import ru.lanik.kedditor.utils.NetworkScheduler
 import ru.lanik.kedditor.utils.SchedulerPolicy
-import ru.lanik.network.api.PostAPI
-import ru.lanik.network.api.SubredditsAPI
+import ru.lanik.network.api.reactive.RxPostAPI
+import ru.lanik.network.api.reactive.RxSubredditsAPI
 import java.io.InputStream
 import java.io.OutputStream
 import javax.inject.Singleton
@@ -101,19 +101,19 @@ class AppModule {
     @Provides
     @Singleton
     fun provideRxSubredditsRepository(
-        subredditsAPI: SubredditsAPI,
+        rxSubredditsAPI: RxSubredditsAPI,
         schedulerPolicy: SchedulerPolicy,
         settingsStateFlow: StateFlow<SettingsModel>,
-    ): SubredditsRepository.Reactive = RxSubredditsRepository(subredditsAPI, schedulerPolicy, settingsStateFlow)
+    ): SubredditsRepository.Reactive = RxSubredditsRepository(rxSubredditsAPI, schedulerPolicy, settingsStateFlow)
 
     @Provides
     @Singleton
     fun provideRxPostRepository(
-        postAPI: PostAPI,
-        subredditsAPI: SubredditsAPI,
+        rxPostAPI: RxPostAPI,
+        rxSubredditsAPI: RxSubredditsAPI,
         schedulerPolicy: SchedulerPolicy,
         settingsStateFlow: StateFlow<SettingsModel>,
-    ): PostRepository.Reactive = RxPostRepository(postAPI, subredditsAPI, schedulerPolicy, settingsStateFlow)
+    ): PostRepository.Reactive = RxPostRepository(rxPostAPI, rxSubredditsAPI, schedulerPolicy, settingsStateFlow)
 
     @Provides
     @Singleton

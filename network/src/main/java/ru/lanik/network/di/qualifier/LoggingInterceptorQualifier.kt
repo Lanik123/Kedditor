@@ -1,4 +1,4 @@
-package ru.lanik.network.api.interceptor
+package ru.lanik.network.di.qualifier
 
 import javax.inject.Qualifier
 

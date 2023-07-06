@@ -1,4 +1,4 @@
-package ru.lanik.network.api
+package ru.lanik.network.api.reactive
 
 import io.reactivex.rxjava3.core.Single
 import kotlinx.serialization.json.JsonElement
@@ -7,7 +7,7 @@ import retrofit2.http.Path
 import retrofit2.http.Query
 import ru.lanik.network.api.dto.postDTO.PostListingDto
 
-interface PostAPI {
+interface RxPostAPI {
     @GET("/r/{source}")
     fun getPosts(
         @Path("source") source: String?,

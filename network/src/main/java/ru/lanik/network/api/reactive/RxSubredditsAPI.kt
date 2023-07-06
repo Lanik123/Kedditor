@@ -1,4 +1,4 @@
-package ru.lanik.network.api
+package ru.lanik.network.api.reactive
 
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
@@ -7,7 +7,7 @@ import retrofit2.http.Query
 import ru.lanik.network.api.dto.subredditDTO.SubredditDto
 import ru.lanik.network.api.dto.subredditDTO.SubredditListingDto
 
-interface SubredditsAPI {
+interface RxSubredditsAPI {
     @GET("/subreddits/{source}")
     fun getSubredditListing(
         @Path("source") source: String,

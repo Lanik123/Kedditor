@@ -7,14 +7,14 @@ import ru.lanik.kedditor.model.source.SubredditSource
 import ru.lanik.kedditor.utils.SchedulerPolicy
 import ru.lanik.kedditor.utils.extension.applySchedulerPolicy
 import ru.lanik.kedditor.utils.extension.fixAuth
-import ru.lanik.network.api.SubredditsAPI
+import ru.lanik.network.api.reactive.RxSubredditsAPI
 import ru.lanik.network.constants.ApiBaseConst
 import ru.lanik.network.extension.toListSubreddit
 import ru.lanik.network.extension.toSubreddit
 import ru.lanik.network.models.Subreddit
 
 class RxSubredditsRepository(
-    private val subredditsAPI: SubredditsAPI,
+    private val rxSubredditsAPI: RxSubredditsAPI,
     private val schedulerPolicy: SchedulerPolicy,
     private val settingsStateFlow: StateFlow<SettingsModel>,
 ) : SubredditsRepository.Reactive {
@@ -24,7 +24,7 @@ class RxSubredditsRepository(
         page: String,
     ): Single<List<Subreddit>> {
         val direct = source.mainSrc.fixAuth(settingsStateFlow.value.isAuth)
-        return subredditsAPI.getSubredditListing(direct, page)
+        return rxSubredditsAPI.getSubredditListing(direct, page)
             .applySchedulerPolicy(schedulerPolicy)
             .map {
                 it.data.children.toListSubreddit()
@@ -33,7 +33,7 @@ class RxSubredditsRepository(
 
     override fun getSubredditInfo(source: SubredditSource): Single<Subreddit> {
         val direct = source.mainSrc
-        return subredditsAPI.getSubredditInfo(direct, auth = "".fixAuth(settingsStateFlow.value.isAuth))
+        return rxSubredditsAPI.getSubredditInfo(direct, auth = "".fixAuth(settingsStateFlow.value.isAuth))
             .applySchedulerPolicy(schedulerPolicy)
             .map {
                 return@map it.toSubreddit()
@@ -49,7 +49,7 @@ class RxSubredditsRepository(
         } else {
             ApiBaseConst.SEARCH_SUBREDDIT.notAuth
         }
-        return subredditsAPI.getSubredditsByName(cmd, query, limit)
+        return rxSubredditsAPI.getSubredditsByName(cmd, query, limit)
             .applySchedulerPolicy(schedulerPolicy)
             .map {
                 it.data.children.toListSubreddit()
