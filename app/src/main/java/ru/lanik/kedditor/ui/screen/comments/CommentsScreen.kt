@@ -1,5 +1,6 @@
 package ru.lanik.kedditor.ui.screen.comments
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -46,117 +47,114 @@ fun CommentsScreen(
     onFragmentResult: () -> Unit = {},
 ) {
     val viewState by viewModel.commentsViewState.collectAsState()
-    Surface(
-        color = KedditorTheme.colors.primaryBackground,
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(KedditorTheme.colors.primaryBackground),
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-        ) {
-            TopAppBar(
-                colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = KedditorTheme.colors.primaryBackground,
-                ),
-                navigationIcon = {
-                    IconButton(
-                        onClick = {
-                            viewModel.onNavigateBack()
-                            viewState.postWithComments?.let {
-                                onFragmentResult()
-                            }
-                        },
-                    ) {
+        TopAppBar(
+            colors = TopAppBarDefaults.mediumTopAppBarColors(
+                containerColor = KedditorTheme.colors.primaryBackground,
+            ),
+            navigationIcon = {
+                IconButton(
+                    onClick = {
+                        viewModel.onNavigateBack()
+                        viewState.postWithComments?.let {
+                            onFragmentResult()
+                        }
+                    },
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowBack,
+                        contentDescription = null,
+                        tint = KedditorTheme.colors.tintColor,
+                    )
+                }
+            },
+            title = {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.comments_fragment_name).uppercase(),
+                        color = KedditorTheme.colors.primaryText,
+                        style = KedditorTheme.typography.body,
+                    )
+                }
+            },
+            actions = {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.size(48.dp)
+                ) {
+                    if (viewState.isLoading) {
+                        CircularProgressIndicator(
+                            color = KedditorTheme.colors.tintColor,
+                            modifier = Modifier.size(24.dp),
+                        )
+                    } else {
                         Icon(
-                            imageVector = Icons.Rounded.ArrowBack,
+                            imageVector = Icons.Rounded.Refresh,
                             contentDescription = null,
-                            tint = KedditorTheme.colors.tintColor,
+                            tint = KedditorTheme.colors.primaryBackground,
                         )
                     }
-                },
-                title = {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.comments_fragment_name).uppercase(),
-                            color = KedditorTheme.colors.primaryText,
-                            style = KedditorTheme.typography.body,
-                        )
-                    }
-                },
-                actions = {
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        if (viewState.isLoading) {
-                            Spacer(modifier = Modifier.width(12.dp))
-                            CircularProgressIndicator(
-                                color = KedditorTheme.colors.tintColor,
-                                modifier = Modifier.size(24.dp),
-                            )
-                            Spacer(modifier = Modifier.width(12.dp))
-                        } else {
-                            Icon(
-                                imageVector = Icons.Rounded.Refresh,
-                                contentDescription = null,
-                                tint = KedditorTheme.colors.primaryBackground,
-                            )
-                        }
-                    }
-                },
-            )
+                }
+            },
+        )
 
-            ErrorHandlerView(
-                errorState = viewState.errorState,
-                loadingState = viewState.postWithComments == null,
-                modifier = Modifier.weight(1f),
-            ) {
-                viewState.postWithComments?.let { data ->
-                    val rememberColumnState = rememberLazyListState()
-                    LazyColumn(
-                        state = rememberColumnState,
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .simpleVerticalScrollbar(
-                                state = rememberColumnState,
-                                scrollbarColor = KedditorTheme.colors.tintColor,
-                            ),
-                        verticalArrangement = Arrangement.Top,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                    ) {
-                        item {
-                            PostViewItem(
-                                post = data.post,
-                                isAuth = viewModel.isAuth(),
-                            )
-                        }
-                        item {
-                            data.post.selfText?.let {
-                                Column(
-                                    modifier = Modifier.padding(KedditorTheme.shapes.generalPadding),
-                                ) {
-                                    Text(
-                                        text = it,
-                                        color = KedditorTheme.colors.primaryText,
-                                        style = KedditorTheme.typography.body,
-                                    )
-                                }
+        ErrorHandlerView(
+            errorState = viewState.errorState,
+            loadingState = viewState.postWithComments == null,
+            modifier = Modifier.weight(1f),
+        ) {
+            viewState.postWithComments?.let { data ->
+                val rememberColumnState = rememberLazyListState()
+                LazyColumn(
+                    state = rememberColumnState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .simpleVerticalScrollbar(
+                            state = rememberColumnState,
+                            scrollbarColor = KedditorTheme.colors.tintColor,
+                        ),
+                    verticalArrangement = Arrangement.Top,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    item {
+                        PostViewItem(
+                            post = data.post,
+                            isAuth = viewModel.isAuth(),
+                        )
+                    }
+                    item {
+                        data.post.selfText?.let {
+                            Column(
+                                modifier = Modifier.padding(KedditorTheme.shapes.generalPadding),
+                            ) {
+                                Text(
+                                    text = it,
+                                    color = KedditorTheme.colors.primaryText,
+                                    style = KedditorTheme.typography.body,
+                                )
                             }
                         }
-                        item {
-                            Spacer(modifier = Modifier.height(12.dp))
-                        }
-                        data.comments.forEach {
-                            if (it.utcTimeStamp > 1.0 && it.commentsBody != null) {
-                                item {
-                                    CommentsViewItem(
-                                        comments = it,
-                                        backgroundColor = KedditorTheme.colors.secondaryBackground,
-                                    )
-                                    Spacer(modifier = Modifier.height(12.dp))
-                                }
+                    }
+                    item {
+                        Spacer(modifier = Modifier.height(12.dp))
+                    }
+                    data.comments.forEach {
+                        if (it.utcTimeStamp > 1.0 && it.commentsBody != null) {
+                            item {
+                                CommentsViewItem(
+                                    comments = it,
+                                    backgroundColor = KedditorTheme.colors.secondaryBackground,
+                                )
+                                Spacer(modifier = Modifier.height(12.dp))
                             }
                         }
                     }
