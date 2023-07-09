@@ -303,141 +303,138 @@ fun DrawerContent(
     onSubredditClicked: (String) -> Unit = {},
 ) {
     val screenWidth = LocalConfiguration.current.screenWidthDp
-    Surface(
-        color = KedditorTheme.colors.primaryBackground,
+    Column(
+        horizontalAlignment = Alignment.Start,
+        modifier = Modifier
+            .width(((screenWidth * 5) / 6).dp)
+            .padding(KedditorTheme.shapes.generalPadding)
+            .background(KedditorTheme.colors.primaryBackground)
+            .fillMaxHeight(),
     ) {
-        Column(
-            horizontalAlignment = Alignment.Start,
-            modifier = Modifier
-                .width(((screenWidth * 5) / 6).dp)
-                .padding(KedditorTheme.shapes.generalPadding)
-                .fillMaxHeight(),
+        OutlinedButton(
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = KedditorTheme.colors.primaryBackground,
+            ),
+            onClick = onHomeClicked,
         ) {
-            OutlinedButton(
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = KedditorTheme.colors.primaryBackground,
-                ),
-                onClick = onHomeClicked,
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f),
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Home,
-                        contentDescription = null,
-                        tint = KedditorTheme.colors.tintColor,
-                    )
-                    Spacer(modifier = Modifier.width(24.dp))
-                    Text(
-                        text = stringResource(R.string.main_button_draw_home),
-                        color = KedditorTheme.colors.primaryText,
-                        style = KedditorTheme.typography.body,
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Rounded.Home,
+                    contentDescription = null,
+                    tint = KedditorTheme.colors.tintColor,
+                )
+                Spacer(modifier = Modifier.width(24.dp))
+                Text(
+                    text = stringResource(R.string.main_button_draw_home),
+                    color = KedditorTheme.colors.primaryText,
+                    style = KedditorTheme.typography.body,
+                )
             }
-            OutlinedButton(
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = KedditorTheme.colors.primaryBackground,
-                ),
-                onClick = onPopularClicked,
+        }
+        OutlinedButton(
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = KedditorTheme.colors.primaryBackground,
+            ),
+            onClick = onPopularClicked,
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f),
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Home,
-                        contentDescription = null,
-                        tint = KedditorTheme.colors.tintColor,
-                    )
-                    Spacer(modifier = Modifier.width(24.dp))
-                    Text(
-                        text = stringResource(R.string.main_button_draw_popular),
-                        color = KedditorTheme.colors.primaryText,
-                        style = KedditorTheme.typography.body,
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Rounded.Home,
+                    contentDescription = null,
+                    tint = KedditorTheme.colors.tintColor,
+                )
+                Spacer(modifier = Modifier.width(24.dp))
+                Text(
+                    text = stringResource(R.string.main_button_draw_popular),
+                    color = KedditorTheme.colors.primaryText,
+                    style = KedditorTheme.typography.body,
+                )
             }
-            OutlinedButton(
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = KedditorTheme.colors.primaryBackground,
-                ),
-                onClick = onAllClicked,
+        }
+        OutlinedButton(
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = KedditorTheme.colors.primaryBackground,
+            ),
+            onClick = onAllClicked,
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f),
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Home,
-                        contentDescription = null,
-                        tint = KedditorTheme.colors.tintColor,
-                    )
-                    Spacer(modifier = Modifier.width(24.dp))
-                    Text(
-                        text = stringResource(R.string.main_button_draw_all),
-                        color = KedditorTheme.colors.primaryText,
-                        style = KedditorTheme.typography.body,
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Rounded.Home,
+                    contentDescription = null,
+                    tint = KedditorTheme.colors.tintColor,
+                )
+                Spacer(modifier = Modifier.width(24.dp))
+                Text(
+                    text = stringResource(R.string.main_button_draw_all),
+                    color = KedditorTheme.colors.primaryText,
+                    style = KedditorTheme.typography.body,
+                )
             }
-            Divider(
-                color = KedditorTheme.colors.secondaryText,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = 0.dp,
-                        vertical = KedditorTheme.shapes.generalPadding,
-                    ),
-            )
-            OutlinedButton(
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = KedditorTheme.colors.primaryBackground,
+        }
+        Divider(
+            color = KedditorTheme.colors.secondaryText,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 0.dp,
+                    vertical = KedditorTheme.shapes.generalPadding,
                 ),
-                onClick = onSettingsClicked,
+        )
+        OutlinedButton(
+            colors = ButtonDefaults.outlinedButtonColors(
+                containerColor = KedditorTheme.colors.primaryBackground,
+            ),
+            onClick = onSettingsClicked,
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f),
             ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.weight(1f),
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Settings,
-                        contentDescription = null,
-                        tint = KedditorTheme.colors.tintColor,
-                    )
-                    Spacer(modifier = Modifier.width(24.dp))
-                    Text(
-                        text = stringResource(R.string.main_button_draw_settings),
-                        color = KedditorTheme.colors.primaryText,
-                        style = KedditorTheme.typography.body,
-                    )
-                }
+                Icon(
+                    imageVector = Icons.Rounded.Settings,
+                    contentDescription = null,
+                    tint = KedditorTheme.colors.tintColor,
+                )
+                Spacer(modifier = Modifier.width(24.dp))
+                Text(
+                    text = stringResource(R.string.main_button_draw_settings),
+                    color = KedditorTheme.colors.primaryText,
+                    style = KedditorTheme.typography.body,
+                )
             }
-            Divider(
-                color = KedditorTheme.colors.secondaryText,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(
-                        horizontal = 0.dp,
-                        vertical = KedditorTheme.shapes.generalPadding,
-                    ),
-            )
-            Text(
-                text = stringResource(R.string.main_text_draw_subscriptions),
-                color = KedditorTheme.colors.secondaryText,
-                style = KedditorTheme.typography.toolbar,
-            )
-            LazyColumn {
-                subreddits?.forEach {
-                    item {
-                        SubredditRow(
-                            subredditName = it.name,
-                            subredditSubs = it.subscribers ?: 0,
-                            subredditIcon = it.imageUrl,
-                            onClick = onSubredditClicked,
-                        )
-                    }
+        }
+        Divider(
+            color = KedditorTheme.colors.secondaryText,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 0.dp,
+                    vertical = KedditorTheme.shapes.generalPadding,
+                ),
+        )
+        Text(
+            text = stringResource(R.string.main_text_draw_subscriptions),
+            color = KedditorTheme.colors.secondaryText,
+            style = KedditorTheme.typography.toolbar,
+        )
+        LazyColumn {
+            subreddits?.forEach {
+                item {
+                    SubredditRow(
+                        subredditName = it.name,
+                        subredditSubs = it.subscribers ?: 0,
+                        subredditIcon = it.imageUrl,
+                        onClick = onSubredditClicked,
+                    )
                 }
             }
         }
@@ -497,14 +494,13 @@ fun MainTopAppBar(
             Row(
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.size(48.dp)
             ) {
                 if (isLoading) {
-                    Spacer(modifier = Modifier.width(12.dp))
                     CircularProgressIndicator(
                         color = KedditorTheme.colors.tintColor,
                         modifier = Modifier.size(24.dp),
                     )
-                    Spacer(modifier = Modifier.width(12.dp))
                 } else {
                     IconButton(onClick = { onMoreClick() }) {
                         Icon(
@@ -565,34 +561,32 @@ fun MainScreenPreview() {
     KedditorTheme(
         darkTheme = true,
     ) {
-        Surface(
-            color = KedditorTheme.colors.primaryBackground,
+        Column(
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(KedditorTheme.colors.primaryBackground),
         ) {
-            Column(
-                verticalArrangement = Arrangement.SpaceBetween,
-                modifier = Modifier.fillMaxSize(),
-            ) {
-                MainTopAppBar(
-                    source = "Test",
-                    sort = "HOT",
-                    isLoading = true,
-                    onMenuClick = { },
-                    onMoreClick = { },
-                )
-                BottomActionBar(
-                    actionList = listOf(
-                        ActionVariant(
-                            icon = Icons.Rounded.Home,
-                        ),
-                        ActionVariant(
-                            icon = Icons.Rounded.List,
-                        ),
-                        ActionVariant(
-                            icon = Icons.Rounded.Person,
-                        ),
+            MainTopAppBar(
+                source = "Test",
+                sort = "HOT",
+                isLoading = true,
+                onMenuClick = { },
+                onMoreClick = { },
+            )
+            BottomActionBar(
+                actionList = listOf(
+                    ActionVariant(
+                        icon = Icons.Rounded.Home,
                     ),
-                )
-            }
+                    ActionVariant(
+                        icon = Icons.Rounded.List,
+                    ),
+                    ActionVariant(
+                        icon = Icons.Rounded.Person,
+                    ),
+                ),
+            )
         }
     }
 }

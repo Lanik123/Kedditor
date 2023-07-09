@@ -1,5 +1,6 @@
 package ru.lanik.kedditor.ui.screen.sublist
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -71,84 +72,81 @@ fun SublistScreen(
             lifecycle.removeObserver(observer)
         }
     }
-
-    Surface(
-        color = KedditorTheme.colors.primaryBackground,
+    Column(
+        verticalArrangement = Arrangement.Top,
+        modifier = Modifier
+            .fillMaxSize()
+            .background(KedditorTheme.colors.primaryBackground),
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-        ) {
-            Column {
-                TopSublistScreenBar(
-                    text = searchVal.value,
-                    isLoading = viewState.isLoading,
-                    onTextChange = {
-                        searchVal.value = it
-                        viewModel.onSearching(it)
-                    },
-                    onBackClicked = viewModel::onNavigateBack,
-                    onMoreClicked = {
-                        isDropdownMoreOpen.value = true
-                    },
-                )
-                DropdownMenuItem(
-                    model = DropdownMenuModel(
-                        values = listOf(
-                            stringResource(id = R.string.more_dropdown_reset),
-                        ),
+        Column {
+            TopSublistScreenBar(
+                text = searchVal.value,
+                isLoading = viewState.isLoading,
+                onTextChange = {
+                    searchVal.value = it
+                    viewModel.onSearching(it)
+                },
+                onBackClicked = viewModel::onNavigateBack,
+                onMoreClicked = {
+                    isDropdownMoreOpen.value = true
+                },
+            )
+            DropdownMenuItem(
+                model = DropdownMenuModel(
+                    values = listOf(
+                        stringResource(id = R.string.more_dropdown_reset),
                     ),
-                    isDropdownOpen = isDropdownMoreOpen.value,
-                    onItemClick = {
-                        when (it) {
-                            0 -> viewModel.fetchSubreddits()
-                            else -> throw NotImplementedError("No valid value for this $it")
-                        }
-                        isDropdownMoreOpen.value = false
-                    },
-                    onDismiss = {
-                        isDropdownMoreOpen.value = false
-                    },
-                    offset = DpOffset(screenWidth.dp, 0.dp),
-                    backgroundColor = KedditorTheme.colors.secondaryBackground,
-                )
-            }
+                ),
+                isDropdownOpen = isDropdownMoreOpen.value,
+                onItemClick = {
+                    when (it) {
+                        0 -> viewModel.fetchSubreddits()
+                        else -> throw NotImplementedError("No valid value for this $it")
+                    }
+                    isDropdownMoreOpen.value = false
+                },
+                onDismiss = {
+                    isDropdownMoreOpen.value = false
+                },
+                offset = DpOffset(screenWidth.dp, 0.dp),
+                backgroundColor = KedditorTheme.colors.secondaryBackground,
+            )
+        }
 
-            Spacer(modifier = Modifier.height(4.dp))
-            ErrorHandlerView(
-                errorState = viewState.errorState,
-                loadingState = viewState.subreddits == null,
-                onResetClick = { viewModel.fetchSubreddits() },
-                modifier = Modifier.weight(1f),
-            ) {
-                LazyColumn {
-                    if (searchVal.value.isNotEmpty()) {
-                        viewState.subredditSearch?.forEach {
-                            item {
-                                SubredditRow(
-                                    subredditName = it.name,
-                                    subredditSubs = it.subscribers ?: 0,
-                                    subredditIcon = it.imageUrl,
-                                    onClick = {
-                                        onFragmentResult(it)
-                                        viewModel.onNavigateBack()
-                                    },
-                                )
-                            }
+        Spacer(modifier = Modifier.height(4.dp))
+        ErrorHandlerView(
+            errorState = viewState.errorState,
+            loadingState = viewState.subreddits == null,
+            onResetClick = { viewModel.fetchSubreddits() },
+            modifier = Modifier.weight(1f),
+        ) {
+            LazyColumn {
+                if (searchVal.value.isNotEmpty()) {
+                    viewState.subredditSearch?.forEach {
+                        item {
+                            SubredditRow(
+                                subredditName = it.name,
+                                subredditSubs = it.subscribers ?: 0,
+                                subredditIcon = it.imageUrl,
+                                onClick = {
+                                    onFragmentResult(it)
+                                    viewModel.onNavigateBack()
+                                },
+                            )
                         }
-                    } else {
-                        viewState.subreddits?.forEach {
-                            item {
-                                SubredditRow(
-                                    subredditName = it.name,
-                                    subredditSubs = it.subscribers ?: 0,
-                                    subredditIcon = it.imageUrl,
-                                    onClick = {
-                                        onFragmentResult(it)
-                                        viewModel.onNavigateBack()
-                                    },
-                                )
-                            }
+                    }
+                } else {
+                    viewState.subreddits?.forEach {
+                        item {
+                            SubredditRow(
+                                subredditName = it.name,
+                                subredditSubs = it.subscribers ?: 0,
+                                subredditIcon = it.imageUrl,
+                                onClick = {
+                                    onFragmentResult(it)
+                                    viewModel.onNavigateBack()
+                                },
+                            )
                         }
                     }
                 }
@@ -237,22 +235,20 @@ fun SublistScreenPreview() {
     KedditorTheme(
         darkTheme = true,
     ) {
-        Surface(
-            color = KedditorTheme.colors.primaryBackground,
+        Column(
+            verticalArrangement = Arrangement.Top,
+            modifier = Modifier
+                .fillMaxSize()
+                .background(KedditorTheme.colors.primaryBackground),
         ) {
-            Column(
-                modifier = Modifier.fillMaxSize(),
-                verticalArrangement = Arrangement.Top,
-            ) {
-                TopSublistScreenBar(
-                    text = "",
-                    isLoading = false,
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                LazyColumn {
-                    item {
-                        SubredditRow("Test")
-                    }
+            TopSublistScreenBar(
+                text = "",
+                isLoading = false,
+            )
+            Spacer(modifier = Modifier.height(4.dp))
+            LazyColumn {
+                item {
+                    SubredditRow("Test")
                 }
             }
         }

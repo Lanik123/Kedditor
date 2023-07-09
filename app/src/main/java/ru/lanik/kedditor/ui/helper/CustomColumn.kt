@@ -2,6 +2,7 @@ package ru.lanik.kedditor.ui.helper
 
 import android.os.Build
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -95,23 +96,19 @@ fun InfinityPostView(
             lifecycle.removeObserver(observer)
         }
     }
-
-    Surface(
-        color = backgroundColor,
-        modifier = modifier,
+    LazyColumn(
+        state = listState,
+        modifier = modifier
+            .background(backgroundColor),
     ) {
-        LazyColumn(
-            state = listState,
-        ) {
-            posts?.let { notNull ->
-                items(notNull) {
-                    PostViewItem(
-                        post = it,
-                        onPostClick = onPostClick,
-                        isAuth = isAuth,
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                }
+        posts?.let { notNull ->
+            items(notNull) {
+                PostViewItem(
+                    post = it,
+                    onPostClick = onPostClick,
+                    isAuth = isAuth,
+                )
+                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }

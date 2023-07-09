@@ -1,5 +1,6 @@
 package ru.lanik.kedditor.ui.screen.settings
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,259 +44,257 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
 ) {
     val viewState by viewModel.settingsViewState.collectAsState()
-    Surface(
-        color = KedditorTheme.colors.primaryBackground,
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(KedditorTheme.colors.primaryBackground),
     ) {
-        Column(
-            modifier = Modifier.fillMaxSize(),
+        TopAppBar(
+            colors = TopAppBarDefaults.mediumTopAppBarColors(
+                containerColor = KedditorTheme.colors.primaryBackground,
+            ),
+            navigationIcon = {
+                IconButton(
+                    onClick = { viewModel.onNavigateBack() },
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowBack,
+                        contentDescription = null,
+                        tint = KedditorTheme.colors.tintColor,
+                    )
+                }
+            },
+            title = {
+                Column(
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.fillMaxWidth(),
+                ) {
+                    Text(
+                        text = stringResource(id = R.string.settings_fragment_name).uppercase(),
+                        color = KedditorTheme.colors.primaryText,
+                        style = KedditorTheme.typography.body,
+                    )
+                }
+            },
+            actions = {
+                Row(
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Refresh,
+                        contentDescription = null,
+                        tint = KedditorTheme.colors.primaryBackground,
+                    )
+                }
+            },
+        )
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(KedditorTheme.shapes.generalPadding),
         ) {
-            TopAppBar(
-                colors = TopAppBarDefaults.mediumTopAppBarColors(
-                    containerColor = KedditorTheme.colors.primaryBackground,
-                ),
-                navigationIcon = {
-                    IconButton(
-                        onClick = { viewModel.onNavigateBack() },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.ArrowBack,
-                            contentDescription = null,
-                            tint = KedditorTheme.colors.tintColor,
-                        )
-                    }
-                },
-                title = {
-                    Column(
-                        verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.settings_fragment_name).uppercase(),
-                            color = KedditorTheme.colors.primaryText,
-                            style = KedditorTheme.typography.body,
-                        )
-                    }
-                },
-                actions = {
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Refresh,
-                            contentDescription = null,
-                            tint = KedditorTheme.colors.primaryBackground,
-                        )
-                    }
-                },
+            Text(
+                modifier = Modifier.weight(1f),
+                text = stringResource(id = R.string.settings_action_enable_dart_theme),
+                color = KedditorTheme.colors.primaryText,
+                style = KedditorTheme.typography.body,
             )
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(KedditorTheme.shapes.generalPadding),
-            ) {
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = stringResource(id = R.string.settings_action_enable_dart_theme),
-                    color = KedditorTheme.colors.primaryText,
-                    style = KedditorTheme.typography.body,
-                )
-
-                Switch(
-                    checked = viewState.isDark,
-                    onCheckedChange = {
-                        viewModel.onSettingsChange(
-                            viewState.copy(
-                                isDark = it,
-                            ),
-                        )
-                    },
-                    colors = SwitchDefaults.colors(
-                        checkedThumbColor = KedditorTheme.colors.tintColor,
-                        uncheckedThumbColor = KedditorTheme.colors.secondaryText,
-                    ),
-                )
-            }
-
-            Divider(
-                modifier = Modifier.padding(start = KedditorTheme.shapes.generalPadding),
-                thickness = 0.5.dp,
-                color = KedditorTheme.colors.secondaryText.copy(
-                    alpha = 0.3f,
-                ),
-            )
-
-            MenuItem(
-                model = MenuItemModel(
-                    title = stringResource(id = R.string.settings_action_text_size),
-                    currentIndex = when (viewState.textSize) {
-                        KedditorSize.Small -> 0
-                        KedditorSize.Medium -> 1
-                        KedditorSize.Big -> 2
-                    },
-                    dropdownMenuModel = DropdownMenuModel(
-                        values = listOf(
-                            stringResource(id = R.string.settings_option_size_small),
-                            stringResource(id = R.string.settings_option_size_medium),
-                            stringResource(id = R.string.settings_option_size_big),
+            Switch(
+                checked = viewState.isDark,
+                onCheckedChange = {
+                    viewModel.onSettingsChange(
+                        viewState.copy(
+                            isDark = it,
                         ),
-                    ),
-                ),
-                onItemSelected = {
-                    val settingsNew = viewState.copy(
-                        textSize = when (it) {
-                            0 -> KedditorSize.Small
-                            1 -> KedditorSize.Medium
-                            2 -> KedditorSize.Big
-                            else -> throw NotImplementedError("No valid value for this $it")
-                        },
                     )
-                    viewModel.onSettingsChange(settingsNew)
                 },
-            )
-
-            MenuItem(
-                model = MenuItemModel(
-                    title = stringResource(id = R.string.settings_action_padding_size),
-                    currentIndex = when (viewState.paddingSize) {
-                        KedditorSize.Small -> 0
-                        KedditorSize.Medium -> 1
-                        KedditorSize.Big -> 2
-                    },
-                    dropdownMenuModel = DropdownMenuModel(
-                        values = listOf(
-                            stringResource(id = R.string.settings_option_size_small),
-                            stringResource(id = R.string.settings_option_size_medium),
-                            stringResource(id = R.string.settings_option_size_big),
-                        ),
-                    ),
+                colors = SwitchDefaults.colors(
+                    checkedThumbColor = KedditorTheme.colors.tintColor,
+                    uncheckedThumbColor = KedditorTheme.colors.secondaryText,
                 ),
-                onItemSelected = {
-                    val settingsNew = viewState.copy(
-                        paddingSize = when (it) {
-                            0 -> KedditorSize.Small
-                            1 -> KedditorSize.Medium
-                            2 -> KedditorSize.Big
-                            else -> throw NotImplementedError("No valid value for this $it")
-                        },
-                    )
-                    viewModel.onSettingsChange(settingsNew)
-                },
-            )
-
-            MenuItem(
-                model = MenuItemModel(
-                    title = stringResource(id = R.string.settings_action_cornel_style),
-                    currentIndex = when (viewState.cornerStyle) {
-                        KedditorCorners.Rounded -> 0
-                        KedditorCorners.Flat -> 1
-                    },
-                    dropdownMenuModel = DropdownMenuModel(
-                        values = listOf(
-                            stringResource(id = R.string.settings_option_shape_rounded),
-                            stringResource(id = R.string.settings_option_shape_flat),
-                        ),
-                    ),
-                ),
-                onItemSelected = {
-                    val settingsNew = viewState.copy(
-                        cornerStyle = when (it) {
-                            0 -> KedditorCorners.Rounded
-                            1 -> KedditorCorners.Flat
-                            else -> throw NotImplementedError("No valid value for this $it")
-                        },
-                    )
-                    viewModel.onSettingsChange(settingsNew)
-                },
-            )
-
-            MenuItem(
-                model = MenuItemModel(
-                    title = stringResource(id = R.string.settings_action_default_post_source),
-                    currentIndex = when (viewState.defaultPostSource) {
-                        DefaultPostSource.POPULAR -> 0
-                        DefaultPostSource.ALL -> 1
-                    },
-                    dropdownMenuModel = DropdownMenuModel(
-                        values = listOf(
-                            stringResource(id = R.string.settings_option_post_source_popular),
-                            stringResource(id = R.string.settings_option_post_source_all),
-                        ),
-                    ),
-                ),
-                onItemSelected = {
-                    val settingsNew = viewState.copy(
-                        defaultPostSource = when (it) {
-                            0 -> DefaultPostSource.POPULAR
-                            1 -> DefaultPostSource.ALL
-                            else -> throw NotImplementedError("No valid value for this $it")
-                        },
-                    )
-                    viewModel.onSettingsChange(settingsNew)
-                },
-            )
-
-            MenuItem(
-                model = MenuItemModel(
-                    title = stringResource(id = R.string.settings_action_default_post_sort),
-                    currentIndex = when (viewState.defaultPostSort) {
-                        DefaultPostSort.HOT -> 0
-                        DefaultPostSort.NEW -> 1
-                        DefaultPostSort.TOP -> 2
-                        DefaultPostSort.RISING -> 3
-                    },
-                    dropdownMenuModel = DropdownMenuModel(
-                        values = listOf(
-                            stringResource(id = R.string.settings_option_post_sort_hot),
-                            stringResource(id = R.string.settings_option_post_sort_new),
-                            stringResource(id = R.string.settings_option_post_sort_top),
-                            stringResource(id = R.string.settings_option_post_sort_rising),
-                        ),
-                    ),
-                ),
-                onItemSelected = {
-                    val settingsNew = viewState.copy(
-                        defaultPostSort = when (it) {
-                            0 -> DefaultPostSort.HOT
-                            1 -> DefaultPostSort.NEW
-                            2 -> DefaultPostSort.TOP
-                            3 -> DefaultPostSort.RISING
-                            else -> throw NotImplementedError("No valid value for this $it")
-                        },
-                    )
-                    viewModel.onSettingsChange(settingsNew)
-                },
-            )
-
-            MenuItem(
-                model = MenuItemModel(
-                    title = stringResource(id = R.string.settings_action_default_subreddit_source),
-                    currentIndex = when (viewState.defaultSubredditSource) {
-                        DefaultSubredditSource.DEFAULT -> 0
-                        DefaultSubredditSource.POPULAR -> 1
-                        DefaultSubredditSource.NEW -> 2
-                    },
-                    dropdownMenuModel = DropdownMenuModel(
-                        values = listOf(
-                            stringResource(id = R.string.settings_option_subreddit_source_default),
-                            stringResource(id = R.string.settings_option_subreddit_source_popular),
-                            stringResource(id = R.string.settings_option_subreddit_source_new),
-                        ),
-                    ),
-                ),
-                onItemSelected = {
-                    val settingsNew = viewState.copy(
-                        defaultSubredditSource = when (it) {
-                            0 -> DefaultSubredditSource.DEFAULT
-                            1 -> DefaultSubredditSource.POPULAR
-                            2 -> DefaultSubredditSource.NEW
-                            else -> throw NotImplementedError("No valid value for this $it")
-                        },
-                    )
-                    viewModel.onSettingsChange(settingsNew)
-                },
             )
         }
+
+        Divider(
+            modifier = Modifier.padding(start = KedditorTheme.shapes.generalPadding),
+            thickness = 0.5.dp,
+            color = KedditorTheme.colors.secondaryText.copy(
+                alpha = 0.3f,
+            ),
+        )
+
+        MenuItem(
+            model = MenuItemModel(
+                title = stringResource(id = R.string.settings_action_text_size),
+                currentIndex = when (viewState.textSize) {
+                    KedditorSize.Small -> 0
+                    KedditorSize.Medium -> 1
+                    KedditorSize.Big -> 2
+                },
+                dropdownMenuModel = DropdownMenuModel(
+                    values = listOf(
+                        stringResource(id = R.string.settings_option_size_small),
+                        stringResource(id = R.string.settings_option_size_medium),
+                        stringResource(id = R.string.settings_option_size_big),
+                    ),
+                ),
+            ),
+            onItemSelected = {
+                val settingsNew = viewState.copy(
+                    textSize = when (it) {
+                        0 -> KedditorSize.Small
+                        1 -> KedditorSize.Medium
+                        2 -> KedditorSize.Big
+                        else -> throw NotImplementedError("No valid value for this $it")
+                    },
+                )
+                viewModel.onSettingsChange(settingsNew)
+            },
+        )
+
+        MenuItem(
+            model = MenuItemModel(
+                title = stringResource(id = R.string.settings_action_padding_size),
+                currentIndex = when (viewState.paddingSize) {
+                    KedditorSize.Small -> 0
+                    KedditorSize.Medium -> 1
+                    KedditorSize.Big -> 2
+                },
+                dropdownMenuModel = DropdownMenuModel(
+                    values = listOf(
+                        stringResource(id = R.string.settings_option_size_small),
+                        stringResource(id = R.string.settings_option_size_medium),
+                        stringResource(id = R.string.settings_option_size_big),
+                    ),
+                ),
+            ),
+            onItemSelected = {
+                val settingsNew = viewState.copy(
+                    paddingSize = when (it) {
+                        0 -> KedditorSize.Small
+                        1 -> KedditorSize.Medium
+                        2 -> KedditorSize.Big
+                        else -> throw NotImplementedError("No valid value for this $it")
+                    },
+                )
+                viewModel.onSettingsChange(settingsNew)
+            },
+        )
+
+        MenuItem(
+            model = MenuItemModel(
+                title = stringResource(id = R.string.settings_action_cornel_style),
+                currentIndex = when (viewState.cornerStyle) {
+                    KedditorCorners.Rounded -> 0
+                    KedditorCorners.Flat -> 1
+                },
+                dropdownMenuModel = DropdownMenuModel(
+                    values = listOf(
+                        stringResource(id = R.string.settings_option_shape_rounded),
+                        stringResource(id = R.string.settings_option_shape_flat),
+                    ),
+                ),
+            ),
+            onItemSelected = {
+                val settingsNew = viewState.copy(
+                    cornerStyle = when (it) {
+                        0 -> KedditorCorners.Rounded
+                        1 -> KedditorCorners.Flat
+                        else -> throw NotImplementedError("No valid value for this $it")
+                    },
+                )
+                viewModel.onSettingsChange(settingsNew)
+            },
+        )
+
+        MenuItem(
+            model = MenuItemModel(
+                title = stringResource(id = R.string.settings_action_default_post_source),
+                currentIndex = when (viewState.defaultPostSource) {
+                    DefaultPostSource.POPULAR -> 0
+                    DefaultPostSource.ALL -> 1
+                },
+                dropdownMenuModel = DropdownMenuModel(
+                    values = listOf(
+                        stringResource(id = R.string.settings_option_post_source_popular),
+                        stringResource(id = R.string.settings_option_post_source_all),
+                    ),
+                ),
+            ),
+            onItemSelected = {
+                val settingsNew = viewState.copy(
+                    defaultPostSource = when (it) {
+                        0 -> DefaultPostSource.POPULAR
+                        1 -> DefaultPostSource.ALL
+                        else -> throw NotImplementedError("No valid value for this $it")
+                    },
+                )
+                viewModel.onSettingsChange(settingsNew)
+            },
+        )
+
+        MenuItem(
+            model = MenuItemModel(
+                title = stringResource(id = R.string.settings_action_default_post_sort),
+                currentIndex = when (viewState.defaultPostSort) {
+                    DefaultPostSort.HOT -> 0
+                    DefaultPostSort.NEW -> 1
+                    DefaultPostSort.TOP -> 2
+                    DefaultPostSort.RISING -> 3
+                },
+                dropdownMenuModel = DropdownMenuModel(
+                    values = listOf(
+                        stringResource(id = R.string.settings_option_post_sort_hot),
+                        stringResource(id = R.string.settings_option_post_sort_new),
+                        stringResource(id = R.string.settings_option_post_sort_top),
+                        stringResource(id = R.string.settings_option_post_sort_rising),
+                    ),
+                ),
+            ),
+            onItemSelected = {
+                val settingsNew = viewState.copy(
+                    defaultPostSort = when (it) {
+                        0 -> DefaultPostSort.HOT
+                        1 -> DefaultPostSort.NEW
+                        2 -> DefaultPostSort.TOP
+                        3 -> DefaultPostSort.RISING
+                        else -> throw NotImplementedError("No valid value for this $it")
+                    },
+                )
+                viewModel.onSettingsChange(settingsNew)
+            },
+        )
+
+        MenuItem(
+            model = MenuItemModel(
+                title = stringResource(id = R.string.settings_action_default_subreddit_source),
+                currentIndex = when (viewState.defaultSubredditSource) {
+                    DefaultSubredditSource.DEFAULT -> 0
+                    DefaultSubredditSource.POPULAR -> 1
+                    DefaultSubredditSource.NEW -> 2
+                },
+                dropdownMenuModel = DropdownMenuModel(
+                    values = listOf(
+                        stringResource(id = R.string.settings_option_subreddit_source_default),
+                        stringResource(id = R.string.settings_option_subreddit_source_popular),
+                        stringResource(id = R.string.settings_option_subreddit_source_new),
+                    ),
+                ),
+            ),
+            onItemSelected = {
+                val settingsNew = viewState.copy(
+                    defaultSubredditSource = when (it) {
+                        0 -> DefaultSubredditSource.DEFAULT
+                        1 -> DefaultSubredditSource.POPULAR
+                        2 -> DefaultSubredditSource.NEW
+                        else -> throw NotImplementedError("No valid value for this $it")
+                    },
+                )
+                viewModel.onSettingsChange(settingsNew)
+            },
+        )
     }
 }
