@@ -4,22 +4,17 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.MoreVert
-import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.Surface
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
@@ -27,8 +22,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.res.stringResource
@@ -45,9 +40,11 @@ import ru.lanik.kedditor.ui.helper.CustomPaddingTextField
 import ru.lanik.kedditor.ui.helper.CustomTextFieldColors
 import ru.lanik.kedditor.ui.helper.DropdownMenuItem
 import ru.lanik.kedditor.ui.helper.ErrorHandlerView
+import ru.lanik.kedditor.ui.helper.StyledTopScreenBar
 import ru.lanik.kedditor.ui.helper.SubredditRow
 import ru.lanik.kedditor.ui.theme.KedditorTheme
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SublistScreen(
     viewModel: SublistViewModel,
@@ -58,6 +55,7 @@ fun SublistScreen(
     val viewState by viewModel.sublistViewState.collectAsState()
     val lifecycleOwner = rememberUpdatedState(LocalLifecycleOwner.current)
     val screenWidth = LocalConfiguration.current.screenWidthDp
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
     DisposableEffect(lifecycleOwner.value) {
         val lifecycle = lifecycleOwner.value.lifecycle
@@ -76,21 +74,37 @@ fun SublistScreen(
         verticalArrangement = Arrangement.Top,
         modifier = Modifier
             .fillMaxSize()
+            .nestedScroll(scrollBehavior.nestedScrollConnection)
             .background(KedditorTheme.colors.primaryBackground),
     ) {
         Column {
-            TopSublistScreenBar(
-                text = searchVal.value,
+            StyledTopScreenBar(
+                scrollBehavior = scrollBehavior,
+                containerColor = KedditorTheme.colors.secondaryBackground,
                 isLoading = viewState.isLoading,
-                onTextChange = {
-                    searchVal.value = it
-                    viewModel.onSearching(it)
+                navIcon = {
+                    Icon(
+                        imageVector = Icons.Rounded.ArrowBack,
+                        contentDescription = null,
+                        tint = KedditorTheme.colors.tintColor,
+                    )
                 },
-                onBackClicked = viewModel::onNavigateBack,
-                onMoreClicked = {
+                onNavClick = viewModel::onNavigateBack,
+                onActionClick = {
                     isDropdownMoreOpen.value = true
                 },
-            )
+            ) {
+                TitleContent(
+                    text = searchVal.value,
+                    isLoading = viewState.isLoading,
+                    onTextChange = {
+                        searchVal.value = it
+                        viewModel.onSearching(it)
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                )
+            }
             DropdownMenuItem(
                 model = DropdownMenuModel(
                     values = listOf(
@@ -156,79 +170,38 @@ fun SublistScreen(
 }
 
 @Composable
-fun TopSublistScreenBar(
+fun TitleContent(
     text: String,
     isLoading: Boolean,
+    modifier: Modifier = Modifier,
     onTextChange: (String) -> Unit = {},
-    onBackClicked: () -> Unit = {},
-    onMoreClicked: () -> Unit = {},
 ) {
-    Surface(
-        shape = KedditorTheme.shapes.cornersStyle,
-        color = KedditorTheme.colors.secondaryBackground,
-        shadowElevation = 12.dp,
-        tonalElevation = 12.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(56.dp),
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceBetween,
-        ) {
-            IconButton(onClick = { onBackClicked() }) {
-                Icon(
-                    imageVector = Icons.Rounded.ArrowBack,
-                    contentDescription = null,
-                    tint = KedditorTheme.colors.tintColor,
-                )
-            }
-            CustomPaddingTextField(
-                value = text,
-                placeholderValue = stringResource(id = R.string.sublist_search_placeholder),
-                readOnly = isLoading,
-                onValueChange = {
-                    onTextChange(it)
-                },
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Done,
-                ),
-                contentPadding = PaddingValues(
-                    horizontal = KedditorTheme.shapes.textHorizontalPadding,
-                    vertical = KedditorTheme.shapes.textVerticalPadding,
-                ),
-                colors = CustomTextFieldColors(
-                    textColor = KedditorTheme.colors.primaryText,
-                    placeholderColor = KedditorTheme.colors.primaryText,
-                    cursorColor = KedditorTheme.colors.tintColor,
-                ),
-                textStyle = KedditorTheme.typography.toolbar,
-                modifier = Modifier.weight(1f),
-            )
-
-            if (isLoading) {
-                Spacer(modifier = Modifier.width(8.dp))
-                CircularProgressIndicator(
-                    color = KedditorTheme.colors.tintColor,
-                    modifier = Modifier.size(24.dp),
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-            } else {
-                IconButton(onClick = { onMoreClicked() }) {
-                    Icon(
-                        imageVector = Icons.Rounded.MoreVert,
-                        contentDescription = null,
-                        tint = KedditorTheme.colors.tintColor,
-                    )
-                }
-            }
-        }
-    }
+    CustomPaddingTextField(
+        value = text,
+        placeholderValue = stringResource(id = R.string.sublist_search_placeholder),
+        readOnly = isLoading,
+        onValueChange = {
+            onTextChange(it)
+        },
+        keyboardOptions = KeyboardOptions(
+            keyboardType = KeyboardType.Text,
+            imeAction = ImeAction.Done,
+        ),
+        contentPadding = PaddingValues(
+            horizontal = KedditorTheme.shapes.textHorizontalPadding,
+            vertical = KedditorTheme.shapes.textVerticalPadding,
+        ),
+        colors = CustomTextFieldColors(
+            textColor = KedditorTheme.colors.primaryText,
+            placeholderColor = KedditorTheme.colors.primaryText,
+            cursorColor = KedditorTheme.colors.tintColor,
+        ),
+        textStyle = KedditorTheme.typography.toolbar,
+        modifier = modifier,
+    )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun SublistScreenPreview() {
@@ -241,10 +214,16 @@ fun SublistScreenPreview() {
                 .fillMaxSize()
                 .background(KedditorTheme.colors.primaryBackground),
         ) {
-            TopSublistScreenBar(
-                text = "",
-                isLoading = false,
-            )
+            StyledTopScreenBar(
+                isLoading = true,
+            ) {
+                TitleContent(
+                    text = "",
+                    isLoading = true,
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                )
+            }
             Spacer(modifier = Modifier.height(4.dp))
             LazyColumn {
                 item {

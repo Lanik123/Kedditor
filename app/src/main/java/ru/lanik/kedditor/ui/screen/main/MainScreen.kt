@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
@@ -19,12 +18,10 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.rounded.List
 import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.Person
 import androidx.compose.material.icons.rounded.Settings
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -34,9 +31,7 @@ import androidx.compose.material3.ModalNavigationDrawer
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
-import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -65,6 +60,7 @@ import ru.lanik.kedditor.model.DropdownMenuModel
 import ru.lanik.kedditor.ui.helper.DropdownMenuItem
 import ru.lanik.kedditor.ui.helper.ErrorHandlerView
 import ru.lanik.kedditor.ui.helper.InfinityPostView
+import ru.lanik.kedditor.ui.helper.StyledTopScreenBar
 import ru.lanik.kedditor.ui.helper.SubredditRow
 import ru.lanik.kedditor.ui.theme.KedditorTheme
 import ru.lanik.network.constants.DefaultPostSort
@@ -188,19 +184,29 @@ fun MainScreen(
                 modifier = Modifier.background(KedditorTheme.colors.primaryBackground),
             ) {
                 Column {
-                    MainTopAppBar(
-                        source = viewModel.getSource().uppercase(),
-                        sort = viewModel.getSort().uppercase(),
+                    StyledTopScreenBar(
                         scrollBehavior = scrollBehavior,
                         isLoading = viewState.isLoading,
-                        onMenuClick = { openDrawer() },
-                        onTitleClick = {
-                            isDropdownSortOpen.value = true
+                        navIcon = {
+                            Icon(
+                                imageVector = Icons.Rounded.Menu,
+                                contentDescription = null,
+                                tint = KedditorTheme.colors.tintColor,
+                            )
                         },
-                        onMoreClick = {
+                        onNavClick = { openDrawer() },
+                        onActionClick = {
                             isDropdownMoreOpen.value = true
                         },
-                    )
+                    ) {
+                        TitleContent(
+                            source = viewModel.getSource().uppercase(),
+                            sort = viewModel.getSort().uppercase(),
+                            onTitleClick = {
+                                isDropdownSortOpen.value = true
+                            },
+                        )
+                    }
                     DropdownMenuItem(
                         model = DropdownMenuModel(
                             values = listOf(
@@ -259,7 +265,7 @@ fun MainScreen(
                         onPostClick = {
                             viewModel.onNavigateToComments(
                                 url = it,
-                                parentSubredditName = viewModel.getSource()
+                                parentSubredditName = viewModel.getSource(),
                             )
                         },
                         onLoadMore = viewModel::fetchPostsForUpdate,
@@ -441,83 +447,35 @@ fun DrawerContent(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainTopAppBar(
+fun TitleContent(
     source: String,
     sort: String,
-    modifier: Modifier = Modifier,
-    scrollBehavior: TopAppBarScrollBehavior? = null,
-    isLoading: Boolean = false,
-    onMenuClick: () -> Unit = {},
     onTitleClick: () -> Unit = {},
-    onMoreClick: () -> Unit = {},
 ) {
-    TopAppBar(
-        navigationIcon = {
-            IconButton(
-                onClick = { onMenuClick() },
-            ) {
-                Icon(
-                    imageVector = Icons.Rounded.Menu,
-                    contentDescription = null,
-                    tint = KedditorTheme.colors.tintColor,
-                )
-            }
-        },
-        title = {
-            Button(
-                colors = ButtonDefaults.outlinedButtonColors(
-                    containerColor = KedditorTheme.colors.primaryBackground,
-                ),
-                onClick = { onTitleClick() },
-            ) {
-                Column(
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.fillMaxWidth(),
-                ) {
-                    Text(
-                        text = source,
-                        color = KedditorTheme.colors.primaryText,
-                        style = KedditorTheme.typography.body,
-                    )
-                    Text(
-                        text = sort,
-                        color = KedditorTheme.colors.secondaryText,
-                        style = KedditorTheme.typography.toolbar,
-                    )
-                }
-            }
-        },
-        actions = {
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.size(48.dp)
-            ) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        color = KedditorTheme.colors.tintColor,
-                        modifier = Modifier.size(24.dp),
-                    )
-                } else {
-                    IconButton(onClick = { onMoreClick() }) {
-                        Icon(
-                            imageVector = Icons.Rounded.MoreVert,
-                            contentDescription = null,
-                            tint = KedditorTheme.colors.tintColor,
-                        )
-                    }
-                }
-            }
-        },
-        colors = TopAppBarDefaults.mediumTopAppBarColors(
+    Button(
+        colors = ButtonDefaults.outlinedButtonColors(
             containerColor = KedditorTheme.colors.primaryBackground,
         ),
-        scrollBehavior = scrollBehavior,
-        modifier = modifier,
-    )
+        onClick = { onTitleClick() },
+    ) {
+        Column(
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            Text(
+                text = source,
+                color = KedditorTheme.colors.primaryText,
+                style = KedditorTheme.typography.body,
+            )
+            Text(
+                text = sort,
+                color = KedditorTheme.colors.secondaryText,
+                style = KedditorTheme.typography.toolbar,
+            )
+        }
+    }
 }
 
 @Composable
@@ -567,13 +525,14 @@ fun MainScreenPreview() {
                 .fillMaxSize()
                 .background(KedditorTheme.colors.primaryBackground),
         ) {
-            MainTopAppBar(
-                source = "Test",
-                sort = "HOT",
+            StyledTopScreenBar(
                 isLoading = true,
-                onMenuClick = { },
-                onMoreClick = { },
-            )
+            ) {
+                TitleContent(
+                    source = "Test",
+                    sort = "HOT",
+                )
+            }
             BottomActionBar(
                 actionList = listOf(
                     ActionVariant(
