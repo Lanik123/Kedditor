@@ -12,8 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Snackbar
@@ -21,7 +19,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -37,10 +34,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
+import androidx.paging.PagingData
+import androidx.paging.compose.LazyPagingItems
+import androidx.paging.compose.collectAsLazyPagingItems
+import androidx.paging.compose.itemKey
 import coil.ImageLoader
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import ru.lanik.kedditor.R
 import ru.lanik.kedditor.constants.DefaultError
@@ -49,37 +51,17 @@ import ru.lanik.kedditor.ui.theme.KedditorTheme
 import ru.lanik.network.models.Post
 
 @Composable
-fun InfiniteListHandler(
-    listState: LazyListState,
-    listSize: Int,
-    onLoadMore: () -> Unit = {},
-) {
-    val loadMore = remember {
-        derivedStateOf {
-            val firstVisibleItemIndex = listState.firstVisibleItemIndex
-            val visibleItemsCount = listState.layoutInfo.visibleItemsInfo.size
-            val percent = (firstVisibleItemIndex / (listSize - visibleItemsCount).toFloat()) * 100f
-            listSize > 0 && percent > 99f
-        }
-    }
-
-    if (loadMore.value) {
-        onLoadMore()
-    }
-}
-
-@Composable
 fun InfinityPostView(
     modifier: Modifier = Modifier,
     isAuth: Boolean = false,
     onPostClick: (String) -> Unit = {},
     backgroundColor: Color = KedditorTheme.colors.primaryBackground,
-    posts: List<Post>? = null,
-    onLoadMore: () -> Unit = {},
+    posts: Flow<PagingData<Post>>? = null,
 ) {
     val listState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     val lifecycleOwner = rememberUpdatedState(LocalLifecycleOwner.current)
+    val postListItems: LazyPagingItems<Post>? = posts?.collectAsLazyPagingItems()
 
     DisposableEffect(lifecycleOwner.value) {
         val lifecycle = lifecycleOwner.value.lifecycle
@@ -101,22 +83,21 @@ fun InfinityPostView(
         modifier = modifier
             .background(backgroundColor),
     ) {
-        posts?.let { notNull ->
-            items(notNull) {
-                PostViewItem(
-                    post = it,
-                    onPostClick = onPostClick,
-                    isAuth = isAuth,
-                )
-                Spacer(modifier = Modifier.height(12.dp))
+        postListItems?.let { notNull ->
+            items(
+                count = notNull.itemCount,
+                key = notNull.itemKey { it.id },
+            ) { index ->
+                notNull[index]?.let { post ->
+                    PostViewItem(
+                        post = post,
+                        onPostClick = onPostClick,
+                        isAuth = isAuth,
+                    )
+                    Spacer(modifier = Modifier.height(12.dp))
+                }
             }
         }
-    }
-    InfiniteListHandler(
-        listState = listState,
-        listSize = posts?.size ?: 0,
-    ) {
-        onLoadMore()
     }
 }
 

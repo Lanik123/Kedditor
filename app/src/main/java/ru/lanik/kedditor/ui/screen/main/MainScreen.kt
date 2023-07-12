@@ -63,8 +63,6 @@ import ru.lanik.kedditor.ui.helper.InfinityPostView
 import ru.lanik.kedditor.ui.helper.StyledTopScreenBar
 import ru.lanik.kedditor.ui.helper.SubredditRow
 import ru.lanik.kedditor.ui.theme.KedditorTheme
-import ru.lanik.network.constants.DefaultPostSort
-import ru.lanik.network.constants.DefaultPostSource
 import ru.lanik.network.models.Subreddit
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -86,7 +84,7 @@ fun MainScreen(
         val lifecycle = lifecycleOwner.value.lifecycle
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_START) {
-                viewModel.fetchPosts()
+                // viewModel.fetchPosts()
                 scrollBehavior.state.heightOffset = 0.0f
             }
         }
@@ -157,15 +155,15 @@ fun MainScreen(
             DrawerContent(
                 subreddits = viewState.subreddits,
                 onHomeClicked = {
-                    viewModel.fetchPosts(DefaultPostSource.POPULAR.name.lowercase())
+                    // viewModel.fetchPosts(DefaultPostSource.POPULAR.name.lowercase())
                     closeDrawer()
                 },
                 onPopularClicked = {
-                    viewModel.fetchPosts(DefaultPostSource.POPULAR.name.lowercase())
+                    // viewModel.fetchPosts(DefaultPostSource.POPULAR.name.lowercase())
                     closeDrawer()
                 },
                 onAllClicked = {
-                    viewModel.fetchPosts(DefaultPostSource.ALL.name.lowercase())
+                    // viewModel.fetchPosts(DefaultPostSource.ALL.name.lowercase())
                     closeDrawer()
                 },
                 onSettingsClicked = {
@@ -174,7 +172,7 @@ fun MainScreen(
                 },
                 onSubredditClicked = {
                     val newStr = it.lowercase()
-                    viewModel.fetchPosts(newStr)
+                    // viewModel.fetchPosts(newStr)
                     closeDrawer()
                 },
             )
@@ -219,10 +217,10 @@ fun MainScreen(
                         isDropdownOpen = isDropdownSortOpen.value,
                         onItemClick = {
                             when (it) {
-                                0 -> viewModel.fetchPosts(newSort = DefaultPostSort.HOT)
-                                1 -> viewModel.fetchPosts(newSort = DefaultPostSort.NEW)
-                                2 -> viewModel.fetchPosts(newSort = DefaultPostSort.TOP)
-                                3 -> viewModel.fetchPosts(newSort = DefaultPostSort.RISING)
+                                // 0 -> viewModel.fetchPosts(newSort = DefaultPostSort.HOT)
+                                // 1 -> viewModel.fetchPosts(newSort = DefaultPostSort.NEW)
+                                // 2 -> viewModel.fetchPosts(newSort = DefaultPostSort.TOP)
+                                // 3 -> viewModel.fetchPosts(newSort = DefaultPostSort.RISING)
                                 else -> throw NotImplementedError("No valid value for this $it")
                             }
                             isDropdownSortOpen.value = false
@@ -241,7 +239,7 @@ fun MainScreen(
                         isDropdownOpen = isDropdownMoreOpen.value,
                         onItemClick = {
                             when (it) {
-                                0 -> viewModel.fetchPosts()
+                                // 0 -> viewModel.fetchPosts()
                                 else -> throw NotImplementedError("No valid value for this $it")
                             }
                             isDropdownMoreOpen.value = false
@@ -256,7 +254,7 @@ fun MainScreen(
                     errorState = viewState.errorState,
                     loadingState = viewState.posts == null,
                     onResetClick = {
-                        viewModel.fetchPosts(isUpdate = it)
+                        // viewModel.fetchPosts(isUpdate = it)
                     },
                     modifier = Modifier.weight(1f),
                 ) {
@@ -268,7 +266,7 @@ fun MainScreen(
                                 parentSubredditName = viewModel.getSource(),
                             )
                         },
-                        onLoadMore = viewModel::fetchPostsForUpdate,
+                        // onLoadMore = viewModel::fetchPostsForUpdate,
                         isAuth = viewModel.isAuth(),
                     )
                 }
@@ -277,7 +275,7 @@ fun MainScreen(
                         ActionVariant(
                             icon = Icons.Rounded.Home,
                             command = {
-                                viewModel.fetchPosts(DefaultPostSource.POPULAR.name.lowercase())
+                                // viewModel.fetchPosts(DefaultPostSource.POPULAR.name.lowercase())
                             },
                         ),
                         ActionVariant(
