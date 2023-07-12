@@ -91,7 +91,6 @@ dependencies {
     implementation(libs.datastore)
     implementation(libs.datastore.rx)
     implementation(libs.paging.runtime)
-    implementation(libs.paging.rx)
     implementation(libs.paging.compose)
     implementation(libs.dagger.hilt.android)
     kapt(libs.dagger.hilt.compiler)
