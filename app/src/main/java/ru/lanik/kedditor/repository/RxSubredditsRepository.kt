@@ -3,7 +3,7 @@ package ru.lanik.kedditor.repository
 import io.reactivex.rxjava3.core.Single
 import kotlinx.coroutines.flow.StateFlow
 import ru.lanik.kedditor.model.SettingsModel
-import ru.lanik.kedditor.model.source.SubredditSource
+import ru.lanik.kedditor.model.path.SubredditPath
 import ru.lanik.kedditor.utils.SchedulerPolicy
 import ru.lanik.kedditor.utils.extension.applySchedulerPolicy
 import ru.lanik.kedditor.utils.extension.fixAuth
@@ -20,7 +20,7 @@ class RxSubredditsRepository(
 ) : SubredditsRepository.Reactive {
 
     override fun fetchSubreddits(
-        source: SubredditSource,
+        source: SubredditPath,
         page: String,
     ): Single<List<Subreddit>> {
         val direct = source.mainSrc.fixAuth(settingsStateFlow.value.isAuth)
@@ -31,7 +31,7 @@ class RxSubredditsRepository(
             }
     }
 
-    override fun getSubredditInfo(source: SubredditSource): Single<Subreddit> {
+    override fun getSubredditInfo(source: SubredditPath): Single<Subreddit> {
         val direct = source.mainSrc
         return rxSubredditsAPI.getSubredditInfo(direct, auth = "".fixAuth(settingsStateFlow.value.isAuth))
             .applySchedulerPolicy(schedulerPolicy)

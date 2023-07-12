@@ -1,18 +1,18 @@
 package ru.lanik.kedditor.repository
 
 import io.reactivex.rxjava3.core.Single
-import ru.lanik.kedditor.model.source.SubredditSource
+import ru.lanik.kedditor.model.path.SubredditPath
 import ru.lanik.network.models.Subreddit
 
 interface SubredditsRepository {
     interface Reactive {
         fun fetchSubreddits(
-            source: SubredditSource,
+            source: SubredditPath,
             page: String = "",
         ): Single<List<Subreddit>>
 
         fun getSubredditInfo(
-            source: SubredditSource,
+            source: SubredditPath,
         ): Single<Subreddit>
 
         fun getSubredditsByName(

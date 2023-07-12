@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import ru.lanik.kedditor.constants.DefaultError
 import ru.lanik.kedditor.model.SublistModel
-import ru.lanik.kedditor.model.source.SubredditSource
+import ru.lanik.kedditor.model.path.SubredditPath
 import ru.lanik.kedditor.repository.SettingsManager
 import ru.lanik.kedditor.repository.SubredditsRepository
 import ru.lanik.network.constants.DefaultSubredditSource
@@ -24,7 +24,7 @@ class SublistViewModel(
     private val settingsManager: SettingsManager.Reactive,
 ) : ViewModel() {
     private val settingsStateFlow = settingsManager.getStateFlow()
-    private var defaultPath = SubredditSource(
+    private var defaultPath = SubredditPath(
         mainSrc = settingsStateFlow.value.defaultSubredditSource.name.lowercase(),
     )
     private val _sublistViewState = MutableStateFlow(SublistModel(isLoading = true))
@@ -55,7 +55,7 @@ class SublistViewModel(
         setIsLoading(true)
         newSource?.let {
             if (it.name.lowercase() != defaultPath.mainSrc) {
-                defaultPath = SubredditSource.fromEnum(it)
+                defaultPath = SubredditPath.fromEnum(it)
             }
         }
         var afterId = ""
