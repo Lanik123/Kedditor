@@ -1,12 +1,12 @@
-package ru.lanik.kedditor.model.source
+package ru.lanik.kedditor.model.path
 
 import ru.lanik.network.constants.DefaultPostSort
 
-data class PostSource(
+data class PostPath(
     val mainSrc: String,
     val sortType: DefaultPostSort,
 ) {
-    fun toPath(): String {
+    fun toPathStr(): String {
         return "$mainSrc/${sortToStr()}"
     }
 

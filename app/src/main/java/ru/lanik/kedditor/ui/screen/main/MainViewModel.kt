@@ -11,8 +11,8 @@ import kotlinx.coroutines.flow.asStateFlow
 import ru.lanik.kedditor.R
 import ru.lanik.kedditor.constants.DefaultError
 import ru.lanik.kedditor.model.PostModel
-import ru.lanik.kedditor.model.source.PostSource
-import ru.lanik.kedditor.model.source.SubredditSource
+import ru.lanik.kedditor.model.path.PostPath
+import ru.lanik.kedditor.model.path.SubredditPath
 import ru.lanik.kedditor.repository.PostRepository
 import ru.lanik.kedditor.repository.SettingsManager
 import ru.lanik.kedditor.repository.SubredditsRepository
@@ -31,11 +31,11 @@ class MainViewModel(
 ) : ViewModel() {
     private val settingsStateFlow = settingsManager.getStateFlow()
     private var retryCount = 0
-    private var defaultPostPath = PostSource(
+    private var defaultPostPath = PostPath(
         mainSrc = settingsStateFlow.value.defaultPostSource.name.lowercase(),
         sortType = settingsStateFlow.value.defaultPostSort,
     )
-    private var defaultSubredditPath = SubredditSource(
+    private var defaultSubredditPath = SubredditPath(
         mainSrc = settingsStateFlow.value.defaultSubredditSource.name.lowercase(),
     )
     private val _mainViewState = MutableStateFlow(PostModel(isLoading = true))

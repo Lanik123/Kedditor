@@ -6,7 +6,7 @@ import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.kotlin.addTo
 import kotlinx.coroutines.flow.StateFlow
 import ru.lanik.kedditor.model.SettingsModel
-import ru.lanik.kedditor.model.source.PostSource
+import ru.lanik.kedditor.model.path.PostPath
 import ru.lanik.kedditor.utils.SchedulerPolicy
 import ru.lanik.kedditor.utils.extension.applySchedulerPolicy
 import ru.lanik.kedditor.utils.extension.fixAuth
@@ -25,12 +25,12 @@ class RxPostRepository(
     private val settingsStateFlow: StateFlow<SettingsModel>,
 ) : PostRepository.Reactive {
     override fun fetchPosts(
-        source: PostSource,
+        source: PostPath,
         after: String,
     ): Single<List<Post>> {
-        Log.e("Deb", source.toPath())
+        Log.e("Deb", source.toPathStr())
         val compositeDisposable = CompositeDisposable()
-        val direct = source.toPath().fixAuth(settingsStateFlow.value.isAuth)
+        val direct = source.toPathStr().fixAuth(settingsStateFlow.value.isAuth)
         return rxPostAPI.getPosts(direct, after)
             .applySchedulerPolicy(schedulerPolicy)
             .doOnDispose { compositeDisposable.dispose() }
